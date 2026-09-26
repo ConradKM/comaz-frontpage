@@ -2,19 +2,20 @@ import { Link } from 'react-router-dom'
 import Container from '../components/Container'
 import { ShieldIcon, SparkIcon, UserPortalIcon, UsersIcon } from '../components/icons'
 import { APP_URL } from '../lib/constants'
+import { btnGhostOnDark, btnOnDark, card, eyebrow, h1, h2, h3, lead } from '../lib/styles'
 
 const values = [
   {
     icon: SparkIcon,
     title: 'Simple by default',
     description:
-      'Businesses run on tight margins and tighter schedules. Every screen in CoMaz OS is built to be understood in seconds, not taught in a training session.',
+      'Small businesses run on tight margins and tighter schedules. Every screen in CoMaz OS is built to be understood in seconds, not taught in a training session.',
   },
   {
     icon: UsersIcon,
     title: 'Built around how you actually work',
     description:
-      'We design around how bookings, checklists and reminders actually happen day to day — not around what looks good in a slide deck.',
+      'We design around how bookings, calls, checklists and reminders really happen day to day — not around what looks good in a slide deck.',
   },
   {
     icon: ShieldIcon,
@@ -24,92 +25,87 @@ const values = [
   },
   {
     icon: UserPortalIcon,
-    title: 'Fewer excuses to call it in',
+    title: 'Honest automation',
     description:
-      'The easier it is for a customer to book and stay reminded online, the less falls to your front desk to chase by phone.',
+      'Our AI assistant only answers from your real data. When it doesn’t know, it says so and hands the caller to your team — it never makes things up.',
   },
+]
+
+const audience = [
+  'Independent businesses replacing paper diaries and spreadsheets',
+  'Busy front desks that can’t get to every phone call',
+  'Teams that need one shared schedule everyone can trust',
+  'Growing groups that need every location kept cleanly separate',
 ]
 
 export default function About() {
   return (
     <div>
-      <section className="bg-slate-50 py-20 sm:py-28">
+      <section className="pt-16 pb-20 sm:pt-24 sm:pb-24">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
-            <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-              About CoMaz OS
-            </span>
-            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-              Built for the people who keep service businesses running smoothly
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              Service businesses keep the country moving, usually with software that was never
-              built for them. CoMaz OS exists to change that — one booking, one reminder and one
-              happy returning customer at a time.
+            <span className={eyebrow}>About CoMaz OS</span>
+            <h1 className={`mt-6 ${h1}`}>Built for the businesses that run on appointments</h1>
+            <p className={`mx-auto mt-6 max-w-2xl ${lead}`}>
+              Clinics, salons, studios, trades and consultants keep their communities running,
+              usually with software that was never built for them. CoMaz OS exists to change
+              that — one booking, one call and one returning customer at a time.
             </p>
           </div>
         </Container>
       </section>
 
-      <section className="py-20 sm:py-28">
+      <section className="pb-20 sm:pb-24">
         <Container>
-          <div className="mx-auto grid max-w-5xl gap-12 lg:grid-cols-2 lg:items-center">
+          <div className="mx-auto grid max-w-5xl gap-10 lg:grid-cols-[1fr_380px] lg:items-start lg:gap-16">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight text-slate-900">Why we built it</h2>
-              <div className="mt-6 space-y-4 text-base leading-7 text-slate-600">
+              <h2 className={h2}>Why we built it</h2>
+              <div className="mt-6 space-y-4 text-base leading-7 text-muted">
                 <p>
                   Too many independent businesses still run their diary on paper, their reminders
                   from memory, and their customer history in whoever’s head happened to take the
-                  call. It works, right up until the day it doesn’t — a missed appointment, a
-                  double-booking, a regular customer who quietly starts going somewhere else.
+                  call. It works, right up until the day it doesn’t — a missed call, a
+                  double-booking, a regular who quietly starts going somewhere else.
                 </p>
                 <p>
-                  CoMaz OS is a single place for the whole job: customers book online without
-                  needing an account, staff review and confirm the schedule, checklists capture
-                  the work with photo evidence, and reminders go out on their own before every
-                  appointment falls due. Nothing exotic — just the admin, handled, so your team
-                  can get on with the work.
+                  CoMaz OS is one place for the whole job. Customers book online without needing
+                  an account, or call and speak to an AI assistant that books them in from your
+                  live calendar. Staff review and confirm the schedule, checklists capture the work
+                  with photo evidence, and reminders go out on their own. Nothing exotic — just
+                  the admin, handled, so your team can get on with the work.
                 </p>
               </div>
             </div>
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-8">
-              <p className="text-sm font-semibold text-slate-900">Who it’s for</p>
-              <ul className="mt-4 space-y-3 text-sm text-slate-600">
-                <li className="flex gap-3">
-                  <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600" />
-                  Independent service businesses replacing paper diaries and spreadsheets
-                </li>
-                <li className="flex gap-3">
-                  <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600" />
-                  Busy teams that need one shared schedule everyone can trust
-                </li>
-                <li className="flex gap-3">
-                  <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600" />
-                  Growing business groups who need every site kept cleanly separate
-                </li>
+            <div className={`${card} p-7`}>
+              <p className="text-sm font-medium text-ink">Who it’s for</p>
+              <ul className="mt-5 space-y-3.5 text-sm leading-6 text-muted">
+                {audience.map((item) => (
+                  <li key={item} className="flex gap-3">
+                    <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-ink" />
+                    {item}
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
         </Container>
       </section>
 
-      <section className="bg-slate-50 py-20 sm:py-28">
+      <section className="border-y border-silver bg-white py-20 sm:py-24">
         <Container>
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              What we believe
-            </h2>
+            <h2 className={h2}>What we believe</h2>
           </div>
-          <div className="mt-16 grid gap-6 sm:grid-cols-2">
+          <div className="mx-auto mt-14 grid max-w-5xl gap-5 sm:grid-cols-2">
             {values.map((value) => {
               const Icon = value.icon
               return (
-                <div key={value.title} className="rounded-2xl bg-white p-6 shadow-sm">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                    <Icon />
-                  </div>
-                  <h3 className="mt-4 text-base font-semibold text-slate-900">{value.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">{value.description}</p>
+                <div key={value.title} className="rounded-xl bg-paper p-7">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-ink shadow-card">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <h3 className={`mt-5 ${h3}`}>{value.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted">{value.description}</p>
                 </div>
               )
             })}
@@ -117,28 +113,22 @@ export default function About() {
         </Container>
       </section>
 
-      <section className="py-20 sm:py-28">
+      <section className="py-20 sm:py-24">
         <Container>
-          <div className="mx-auto max-w-3xl rounded-3xl border border-slate-200 px-8 py-14 text-center sm:px-16">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              What’s next
+          <div className="rounded-xl bg-ink px-6 py-14 text-center sm:px-16 sm:py-16">
+            <h2 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+              Now answering the phone
             </h2>
-            <p className="mt-4 text-base leading-7 text-slate-600">
-              We’re building towards phone and WhatsApp reminders, so customers can be reached
-              however suits them best — on top of the booking, checklist and portal tools already
-              in the platform today.
+            <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-white/65">
+              The CoMaz AI assistant picks up every call, books from your live calendar and hands
+              over to your team when a person is needed — on top of the booking, checklist and
+              portal tools already in the platform.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <a
-                href={APP_URL}
-                className="w-full rounded-full bg-blue-600 px-7 py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 sm:w-auto"
-              >
+              <a href={APP_URL} className={`${btnOnDark} w-full sm:w-auto`}>
                 Open the app
               </a>
-              <Link
-                to="/pricing"
-                className="w-full rounded-full border border-slate-300 px-7 py-3.5 text-center text-sm font-semibold text-slate-900 transition-colors hover:border-slate-400 sm:w-auto"
-              >
+              <Link to="/pricing" className={`${btnGhostOnDark} w-full sm:w-auto`}>
                 See pricing
               </Link>
             </div>

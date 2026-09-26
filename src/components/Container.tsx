@@ -7,5 +7,5 @@ export default function Container({
   children: ReactNode
   className?: string
 }) {
-  return <div className={`mx-auto max-w-6xl px-4 sm:px-6 ${className}`}>{children}</div>
+  return <div className={`mx-auto max-w-[1200px] px-4 sm:px-6 ${className}`}>{children}</div>
 }
