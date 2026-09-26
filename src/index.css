@@ -1,7 +1,43 @@
 @import 'tailwindcss';
 
+/*
+ * Monochrome design tokens. Colour is deliberately scarce: ink/graphite for text and
+ * primary actions, paper/white for surfaces, and a single blue accent for small
+ * informational highlights. Cards separate with shadows, not borders.
+ */
 @theme {
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+
+  --color-ink: #101010;
+  --color-graphite: #242424;
+  --color-muted: #6b7280;
+  --color-faint: #898989;
+  --color-silver: #e5e7eb;
+  --color-paper: #f4f4f4;
+  --color-accent: #0099ff;
+  --color-accent-soft: #eff6fe;
+
+  --shadow-card:
+    rgba(19, 19, 22, 0.7) 0px 1px 5px -4px, rgba(34, 42, 53, 0.08) 0px 0px 0px 1px,
+    rgba(34, 42, 53, 0.05) 0px 4px 8px 0px;
+  --shadow-card-hover:
+    rgba(19, 19, 22, 0.7) 0px 1px 5px -4px, rgba(34, 42, 53, 0.12) 0px 0px 0px 1px,
+    rgba(34, 42, 53, 0.08) 0px 8px 20px 0px;
+  --shadow-button: rgba(255, 255, 255, 0.15) 0px 2px 0px 0px inset;
+
+  --animate-rise: rise 0.35s ease-out both;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 html {
@@ -9,5 +45,18 @@ html {
 }
 
 body {
-  @apply bg-white text-slate-900 antialiased;
+  @apply bg-paper text-graphite antialiased;
+  letter-spacing: -0.011em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

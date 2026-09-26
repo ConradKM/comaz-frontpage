@@ -3,186 +3,263 @@ import Container from '../components/Container'
 import {
   BellIcon,
   CalendarIcon,
+  CardIcon,
+  ChatIcon,
   ChecklistIcon,
+  HandoffIcon,
+  MoonIcon,
   PhoneIcon,
+  RepeatIcon,
   UserPortalIcon,
   UsersIcon,
 } from '../components/icons'
+import BookingWidget from '../components/landing/BookingWidget'
+import CallDemo from '../components/landing/CallDemo'
 import { APP_URL } from '../lib/constants'
+import {
+  btnGhost,
+  btnGhostOnDark,
+  btnOnDark,
+  btnPrimary,
+  card,
+  eyebrow,
+  h1,
+  h2,
+  h3,
+  lead,
+} from '../lib/styles'
+
+const industries = [
+  'Clinics',
+  'Salons & barbers',
+  'Physio & therapy',
+  'Beauty',
+  'Fitness studios',
+  'Tutors',
+  'Trades & repairs',
+  'Consultants',
+  'Pet care',
+]
+
+const phoneCapabilities = [
+  {
+    icon: MoonIcon,
+    title: 'Answers every call, 24/7',
+    description: 'Evenings, weekends, or when the whole team is busy — no more voicemail.',
+  },
+  {
+    icon: CalendarIcon,
+    title: 'Books from your live calendar',
+    description:
+      'It checks your real services, prices and open slots before offering anything. It never guesses.',
+  },
+  {
+    icon: RepeatIcon,
+    title: 'Cancels and reschedules',
+    description: 'Finds the caller’s existing appointment and reads it back before changing it.',
+  },
+  {
+    icon: CardIcon,
+    title: 'Takes deposits',
+    description: 'Texts a secure payment link when a service needs a deposit to secure it.',
+  },
+  {
+    icon: ChatIcon,
+    title: 'Answers your FAQs',
+    description: 'Parking, policies, what to bring — in your words. If it doesn’t know, it says so.',
+  },
+  {
+    icon: HandoffIcon,
+    title: 'Hands over to your team',
+    description: 'When a caller needs a person, it passes them through instead of improvising.',
+  },
+]
 
 const features = [
   {
     icon: CalendarIcon,
     title: 'Online booking, 24/7',
     description:
-      'Customers book straight from your website — no app, no account, no phone tag. Requests land in one queue for your team to approve.',
+      'Customers book from your website with no app and no account. Requests land in one queue for your team to approve.',
+  },
+  {
+    icon: PhoneIcon,
+    title: 'An AI phone assistant',
+    description:
+      'Answers your phone around the clock, books into the same calendar, and works with your existing number or phone menu.',
   },
   {
     icon: BellIcon,
     title: 'Repeat business, automatically',
     description:
-      'Every customer’s next appointment is tracked automatically, so reminders go out on their own — filling your calendar with returning customers your team never had to chase, before they drift to a competitor.',
+      'Each customer’s next appointment is tracked, so reminders go out on their own — before they drift to a competitor.',
   },
   {
     icon: UserPortalIcon,
-    title: 'A portal your customers actually use',
+    title: 'A customer portal',
     description:
-      'Customers sign in with just their email and an account reference to see their history, status and appointments — no password to forget.',
+      'Customers sign in with their email and an account reference to see history and upcoming appointments. No password to forget.',
   },
   {
     icon: ChecklistIcon,
-    title: 'Checklists that protect your business',
+    title: 'Checklists with evidence',
     description:
-      'Every inspection is backed by time-stamped photos and video, so there’s a clear record for every job — fewer disputes, stronger customer trust, and evidence on hand if a job’s ever questioned.',
+      'Back every job with time-stamped photos and video — a clear record if a job’s ever questioned.',
   },
   {
     icon: UsersIcon,
     title: 'Built for your whole team',
     description:
-      'Owner and staff roles keep the right people doing the right things, with a shared schedule everyone can see and trust.',
-  },
-  {
-    icon: PhoneIcon,
-    title: 'Phone & WhatsApp, powered by Twilio',
-    description:
-      'Every business gets its own secure Twilio connection under the hood — the groundwork for the call and WhatsApp reminders we’re rolling out next, so you can reach customers however suits them best.',
+      'Owner and staff roles keep the right people on the right things, with one schedule everyone trusts.',
   },
 ]
 
 const steps = [
   {
-    number: '01',
-    title: 'Customers book online',
+    title: 'Customers book online or by phone',
     description:
-      'They pick an appointment type and a time from your live availability — no calls, no voicemail, no chasing.',
+      'They pick a service and a time from your live availability — on your booking page, or by calling the AI assistant.',
   },
   {
-    number: '02',
     title: 'Your team reviews and confirms',
     description:
-      'Booking requests wait in one place until staff approve them, so nothing hits the schedule by accident.',
+      'Every request waits in one queue until staff approve it, so nothing hits the schedule by accident.',
   },
   {
-    number: '03',
     title: 'Reminders bring them back',
     description:
-      'As each customer’s next appointment comes due, CoMaz OS reminds them automatically — and points them straight back to you.',
+      'As each customer’s next appointment comes due, CoMaz OS reminds them automatically and points them back to you.',
   },
 ]
 
 export default function Landing() {
   return (
     <div>
-      <section className="relative overflow-hidden bg-slate-50">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 -top-40 h-[520px] bg-[radial-gradient(60%_60%_at_50%_0%,rgba(37,99,235,0.14),transparent)]"
-        />
-        <Container className="relative py-20 sm:py-28">
+      {/* Hero */}
+      <section className="pt-16 pb-20 sm:pt-24 sm:pb-24">
+        <Container>
           <div className="mx-auto max-w-3xl text-center">
-            <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-              For service businesses
-            </span>
-            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
-              Run your business without the admin headache
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-slate-600 sm:text-xl">
-              CoMaz OS brings online booking, automatic reminders and a customer portal into
-              one simple platform — so your team spends less time on the phone and more time with
-              customers.
+            <a href="#phone" className={`${eyebrow} transition-shadow hover:shadow-card-hover`}>
+              <span className="rounded-full bg-accent-soft px-1.5 py-px text-[11px] font-semibold text-accent">
+                New
+              </span>
+              An AI assistant that answers your phone
+              <span aria-hidden className="text-faint">
+                →
+              </span>
+            </a>
+            <h1 className={`mt-6 ${h1}`}>The front desk that never closes</h1>
+            <p className={`mx-auto mt-6 max-w-2xl ${lead}`}>
+              CoMaz OS gives your customers a live booking page, an AI assistant that picks up
+              every call, and reminders that bring them back — all feeding one schedule your team
+              controls.
             </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <a
-                href={APP_URL}
-                className="w-full rounded-full bg-blue-600 px-7 py-3.5 text-center text-sm font-semibold text-white shadow-md shadow-blue-600/20 transition-colors hover:bg-blue-700 sm:w-auto"
-              >
+            <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <a href={APP_URL} className={`${btnPrimary} w-full sm:w-auto`}>
                 Open the app
               </a>
-              <Link
-                to="/pricing"
-                className="w-full rounded-full border border-slate-300 bg-white px-7 py-3.5 text-center text-sm font-semibold text-slate-900 transition-colors hover:border-slate-400 sm:w-auto"
-              >
+              <Link to="/pricing" className={`${btnGhost} w-full sm:w-auto`}>
                 See pricing
               </Link>
             </div>
           </div>
 
-          <div className="mx-auto mt-16 max-w-4xl">
-            <div className="rounded-2xl border border-slate-200 bg-white p-2 shadow-xl shadow-slate-900/5">
-              <div className="rounded-xl border border-slate-100 bg-slate-50 p-6 sm:p-8">
-                <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">
-                      Moorshoot Service Centre
-                    </p>
-                    <p className="text-xs text-slate-500">Today’s schedule</p>
-                  </div>
-                  <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-                    6 booked · 2 pending
-                  </span>
-                </div>
-                <ul className="mt-4 space-y-3">
-                  {[
-                    { time: '09:00', name: 'J. Whitfield', service: 'Full consultation', status: 'Confirmed' },
-                    { time: '10:30', name: 'A. Osei', service: 'Follow-up appointment', status: 'Confirmed' },
-                    { time: '13:15', name: 'R. Patel', service: 'Initial assessment', status: 'Pending' },
-                  ].map((row) => (
-                    <li
-                      key={row.time}
-                      className="flex items-center justify-between rounded-lg bg-white px-4 py-3 text-sm shadow-sm"
-                    >
-                      <div className="flex items-center gap-4">
-                        <span className="font-mono text-xs font-semibold text-slate-400">
-                          {row.time}
-                        </span>
-                        <div>
-                          <p className="font-medium text-slate-900">{row.name}</p>
-                          <p className="text-xs text-slate-500">{row.service}</p>
-                        </div>
-                      </div>
-                      <span
-                        className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                          row.status === 'Confirmed'
-                            ? 'bg-blue-50 text-blue-700'
-                            : 'bg-amber-50 text-amber-700'
-                        }`}
-                      >
-                        {row.status}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          <div className="mx-auto mt-14 max-w-4xl">
+            <div className={`${card} overflow-hidden`}>
+              <BookingWidget />
             </div>
+            <p className="mt-4 text-center text-xs text-faint">
+              Try it — this is what your customers see. (Demo business, no real booking made.)
+            </p>
           </div>
         </Container>
       </section>
 
-      <section className="py-20 sm:py-28">
+      {/* Industries */}
+      <section className="pb-20 sm:pb-24">
+        <Container>
+          <p className="text-center text-sm text-muted">
+            Built for any business that runs on appointments
+          </p>
+          <ul className="mx-auto mt-5 flex max-w-3xl flex-wrap justify-center gap-2">
+            {industries.map((name) => (
+              <li
+                key={name}
+                className="rounded-full bg-white px-3.5 py-1.5 text-sm text-graphite shadow-card"
+              >
+                {name}
+              </li>
+            ))}
+          </ul>
+        </Container>
+      </section>
+
+      {/* AI phone assistant */}
+      <section id="phone" className="scroll-mt-20 border-y border-silver bg-white py-20 sm:py-24">
+        <Container>
+          <div className="grid gap-12 lg:grid-cols-[1fr_minmax(0,500px)] lg:items-start lg:gap-16">
+            <div className="lg:sticky lg:top-28">
+              <span className="inline-flex items-center gap-2 rounded-full bg-paper px-3 py-1 text-xs font-medium text-graphite">
+                <PhoneIcon className="h-3.5 w-3.5" /> AI phone assistant
+              </span>
+              <h2 className={`mt-5 ${h2}`}>Never miss a booking because nobody picked up</h2>
+              <p className={`mt-5 ${lead}`}>
+                A missed call is usually a missed customer. The CoMaz assistant answers in a warm,
+                natural voice, books straight into your calendar, and sends every booking to your
+                team to review — just like one made online.
+              </p>
+
+              <ul className="mt-10 grid gap-x-8 gap-y-7 sm:grid-cols-2">
+                {phoneCapabilities.map((c) => {
+                  const Icon = c.icon
+                  return (
+                    <li key={c.title} className="flex gap-3.5">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-paper text-ink">
+                        <Icon className="h-[18px] w-[18px]" />
+                      </span>
+                      <div>
+                        <p className="text-sm font-medium text-ink">{c.title}</p>
+                        <p className="mt-1 text-sm leading-6 text-muted">{c.description}</p>
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
+
+              <p className="mt-10 text-sm text-muted">
+                Keep your existing number, or add it as an option in your phone menu.
+              </p>
+            </div>
+
+            <CallDemo />
+          </div>
+        </Container>
+      </section>
+
+      {/* Features */}
+      <section className="py-20 sm:py-24">
         <Container>
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              Everything a modern business needs, nothing it doesn’t
-            </h2>
-            <p className="mt-4 text-lg text-slate-600">
+            <h2 className={h2}>Everything you need, nothing you don’t</h2>
+            <p className={`mt-4 ${lead}`}>
               CoMaz OS replaces the diary, the spreadsheet and the sticky notes with one place
               your whole team can trust.
             </p>
           </div>
 
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((feature) => {
               const Icon = feature.icon
               return (
                 <div
                   key={feature.title}
-                  className="rounded-2xl border border-slate-200 p-6 transition-shadow hover:shadow-lg hover:shadow-slate-900/5"
+                  className={`${card} p-6 transition-shadow hover:shadow-card-hover`}
                 >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                    <Icon />
-                  </div>
-                  <h3 className="mt-4 text-base font-semibold text-slate-900">{feature.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">{feature.description}</p>
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-paper text-ink">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <h3 className={`mt-5 ${h3}`}>{feature.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted">{feature.description}</p>
                 </div>
               )
             })}
@@ -190,53 +267,46 @@ export default function Landing() {
         </Container>
       </section>
 
-      <section className="bg-slate-900 py-20 sm:py-28">
+      {/* How it works */}
+      <section className="pb-20 sm:pb-24">
         <Container>
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              How it works
-            </h2>
-            <p className="mt-4 text-lg text-slate-300">
-              From first booking to the next reminder, three simple stages keep your calendar
-              full.
+            <h2 className={h2}>How it works</h2>
+            <p className={`mt-4 ${lead}`}>
+              From first booking to the next reminder, three steps keep your calendar full.
             </p>
           </div>
 
-          <div className="mt-16 grid gap-8 lg:grid-cols-3">
-            {steps.map((step) => (
-              <div key={step.number} className="rounded-2xl border border-white/10 bg-white/5 p-8">
-                <span className="text-sm font-mono font-semibold text-blue-400">
-                  {step.number}
+          <ol className="mt-14 grid gap-5 lg:grid-cols-3">
+            {steps.map((step, i) => (
+              <li key={step.title} className={`${card} p-7`}>
+                <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-full bg-ink px-2 text-xs font-medium text-white">
+                  {i + 1}
                 </span>
-                <h3 className="mt-3 text-lg font-semibold text-white">{step.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-300">{step.description}</p>
-              </div>
+                <h3 className={`mt-5 ${h3}`}>{step.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted">{step.description}</p>
+              </li>
             ))}
-          </div>
+          </ol>
         </Container>
       </section>
 
-      <section className="py-20 sm:py-28">
+      {/* CTA */}
+      <section className="pb-20 sm:pb-24">
         <Container>
-          <div className="mx-auto max-w-3xl rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 px-8 py-14 text-center shadow-xl shadow-blue-600/20 sm:px-16">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          <div className="rounded-xl bg-ink px-6 py-14 text-center sm:px-16 sm:py-16">
+            <h2 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-4xl">
               Ready to see it in action?
             </h2>
-            <p className="mt-4 text-base leading-7 text-blue-100">
+            <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-white/65">
               Open the app to explore CoMaz OS, or take a look at pricing to find the right plan
               for your business.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <a
-                href={APP_URL}
-                className="w-full rounded-full bg-white px-7 py-3.5 text-center text-sm font-semibold text-blue-700 shadow-sm transition-colors hover:bg-blue-50 sm:w-auto"
-              >
+              <a href={APP_URL} className={`${btnOnDark} w-full sm:w-auto`}>
                 Open the app
               </a>
-              <Link
-                to="/pricing"
-                className="w-full rounded-full border border-white/40 px-7 py-3.5 text-center text-sm font-semibold text-white transition-colors hover:bg-white/10 sm:w-auto"
-              >
+              <Link to="/pricing" className={`${btnGhostOnDark} w-full sm:w-auto`}>
                 See pricing
               </Link>
             </div>

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import Container from '../components/Container'
 import { CheckIcon } from '../components/icons'
 import { SUPPORT_EMAIL, SUPPORT_MAILTO } from '../lib/constants'
+import { btnGhost, btnGhostOnDark, btnOnDark, btnPrimary, eyebrow, h1, h2, lead } from '../lib/styles'
 
 const tiers = [
   {
@@ -31,7 +32,7 @@ const tiers = [
   },
   {
     name: 'Multi-Site',
-    description: 'For businesses running more than one site under one roof.',
+    description: 'For businesses running more than one location under one roof.',
     highlighted: false,
     features: [
       'Everything in Growth',
@@ -55,6 +56,11 @@ const faqs = [
       'No — pricing isn’t based on how many customers or bookings you have. Get in touch and we’ll put together a quote based on your business’s size and needs.',
   },
   {
+    question: 'Can the AI phone assistant use my existing number?',
+    answer:
+      'Yes. It can answer on the number your customers already know, or sit behind an option in your existing phone menu. Get in touch and we’ll set it up with you.',
+  },
+  {
     question: 'Can I change plans later?',
     answer:
       'Yes, you can move between plans as your business grows. Talk to us and we’ll switch you over with no disruption to your schedule.',
@@ -74,61 +80,53 @@ const faqs = [
 export default function Pricing() {
   return (
     <div>
-      <section className="bg-slate-50 py-20 sm:py-28">
+      <section className="pt-16 pb-14 sm:pt-24 sm:pb-16">
         <Container>
           <div className="mx-auto max-w-2xl text-center">
-            <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-              Pricing
-            </span>
-            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-              Pricing that scales with your business
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              We're finalising plan pricing. Get in touch and we'll put together a quote based on
-              your business's size and needs.
+            <span className={eyebrow}>Pricing</span>
+            <h1 className={`mt-6 ${h1}`}>Pricing that scales with your business</h1>
+            <p className={`mx-auto mt-6 max-w-xl ${lead}`}>
+              We’re finalising plan pricing. Get in touch and we’ll put together a quote based on
+              your business’s size and needs.
             </p>
           </div>
         </Container>
       </section>
 
-      <section className="py-20 sm:py-24">
+      <section className="pb-20 sm:pb-24">
         <Container>
-          <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-3">
+          <div className="mx-auto grid max-w-5xl gap-5 lg:grid-cols-3">
             {tiers.map((tier) => (
               <div
                 key={tier.name}
-                className={`relative flex flex-col rounded-2xl border p-8 ${
-                  tier.highlighted
-                    ? 'border-blue-600 shadow-xl shadow-blue-600/10'
-                    : 'border-slate-200'
+                className={`relative flex flex-col rounded-xl bg-white p-7 ${
+                  tier.highlighted ? 'shadow-card ring-2 ring-ink' : 'shadow-card'
                 }`}
               >
-                {tier.highlighted && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
-                    Most popular
-                  </span>
-                )}
-                <h2 className="text-lg font-semibold text-slate-900">{tier.name}</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{tier.description}</p>
-                <div className="mt-6">
-                  <span className="text-3xl font-extrabold tracking-tight text-slate-900">
-                    Enquire
-                  </span>
+                <div className="flex items-center justify-between">
+                  <h2 className="font-display text-lg font-semibold tracking-tight text-ink">
+                    {tier.name}
+                  </h2>
+                  {tier.highlighted && (
+                    <span className="rounded-full bg-ink px-2.5 py-0.5 text-xs font-medium text-white">
+                      Most popular
+                    </span>
+                  )}
                 </div>
+                <p className="mt-2 min-h-12 text-sm leading-6 text-muted">{tier.description}</p>
+                <p className="mt-6 font-display text-3xl font-semibold tracking-tight text-ink">
+                  Enquire
+                </p>
                 <a
                   href={SUPPORT_MAILTO}
-                  className={`mt-6 block rounded-full px-5 py-3 text-center text-sm font-semibold transition-colors ${
-                    tier.highlighted
-                      ? 'bg-blue-600 text-white hover:bg-blue-700'
-                      : 'border border-slate-300 text-slate-900 hover:border-slate-400'
-                  }`}
+                  className={`mt-6 ${tier.highlighted ? btnPrimary : btnGhost}`}
                 >
-                  Enquire
+                  Get a quote
                 </a>
-                <ul className="mt-8 space-y-3 text-sm text-slate-600">
+                <ul className="mt-8 space-y-3 border-t border-silver pt-6 text-sm text-graphite">
                   {tier.features.map((feature) => (
                     <li key={feature} className="flex gap-3">
-                      <CheckIcon className="h-5 w-5 shrink-0 text-blue-600" />
+                      <CheckIcon className="h-5 w-5 shrink-0 text-ink" />
                       <span>{feature}</span>
                     </li>
                   ))}
@@ -139,29 +137,27 @@ export default function Pricing() {
         </Container>
       </section>
 
-      <section className="bg-slate-50 py-20 sm:py-28">
+      <section className="border-y border-silver bg-white py-20 sm:py-24">
         <Container>
           <div className="mx-auto max-w-3xl">
-            <h2 className="text-center text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              Frequently asked questions
-            </h2>
-            <div className="mt-12 divide-y divide-slate-200 rounded-2xl border border-slate-200 bg-white">
+            <h2 className={`text-center ${h2}`}>Frequently asked questions</h2>
+            <div className="mt-12 divide-y divide-silver rounded-xl bg-paper">
               {faqs.map((faq) => (
-                <details key={faq.question} className="group p-6 open:bg-slate-50/60">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-slate-900">
+                <details key={faq.question} className="group px-6 py-5">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-medium text-ink [&::-webkit-details-marker]:hidden">
                     {faq.question}
-                    <span className="shrink-0 text-slate-400 transition-transform group-open:rotate-45">
+                    <span className="shrink-0 text-faint transition-transform group-open:rotate-45">
                       <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                         <path
                           d="M12 5v14M5 12h14"
                           stroke="currentColor"
-                          strokeWidth="2"
+                          strokeWidth="1.8"
                           strokeLinecap="round"
                         />
                       </svg>
                     </span>
                   </summary>
-                  <p className="mt-3 text-sm leading-6 text-slate-600">{faq.answer}</p>
+                  <p className="mt-3 text-sm leading-6 text-muted">{faq.answer}</p>
                 </details>
               ))}
             </div>
@@ -169,27 +165,21 @@ export default function Pricing() {
         </Container>
       </section>
 
-      <section className="py-20 sm:py-28">
+      <section className="py-20 sm:py-24">
         <Container>
-          <div className="mx-auto max-w-3xl rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 px-8 py-14 text-center shadow-xl shadow-blue-600/20 sm:px-16">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          <div className="rounded-xl bg-ink px-6 py-14 text-center sm:px-16 sm:py-16">
+            <h2 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-4xl">
               Not sure which plan fits?
             </h2>
-            <p className="mt-4 text-base leading-7 text-blue-100">
+            <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-white/65">
               Drop us a line at {SUPPORT_EMAIL} and we’ll help you pick the right plan for your
               business.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <a
-                href={SUPPORT_MAILTO}
-                className="w-full rounded-full bg-white px-7 py-3.5 text-center text-sm font-semibold text-blue-700 shadow-sm transition-colors hover:bg-blue-50 sm:w-auto"
-              >
-                Enquire
+              <a href={SUPPORT_MAILTO} className={`${btnOnDark} w-full sm:w-auto`}>
+                Get a quote
               </a>
-              <Link
-                to="/about"
-                className="w-full rounded-full border border-white/40 px-7 py-3.5 text-center text-sm font-semibold text-white transition-colors hover:bg-white/10 sm:w-auto"
-              >
+              <Link to="/about" className={`${btnGhostOnDark} w-full sm:w-auto`}>
                 Learn more about us
               </Link>
             </div>
