@@ -39,4 +39,4 @@ src/
 - Pricing tiers in [`src/pages/Pricing.tsx`](src/pages/Pricing.tsx) show "Enquire" instead of a
   price for now — every CTA there mails `support@comaz.co.uk`. Swap in real numbers once pricing
   is finalised.
-- The app URL and support email live in one place: [`src/lib/constants.ts`](src/lib/constants.ts).
+- The app URL and support email live in one place: [`src/lib/constants.ts`](src/lib/constants.ts)
