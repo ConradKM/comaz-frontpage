@@ -23,11 +23,15 @@ import {
   btnPrimary,
   card,
   eyebrow,
-  h1,
   h2,
   h3,
   lead,
 } from '../lib/styles'
+
+// The shared h1 jumps to 60px at lg; in the two-column hero the text column is narrower, so
+// hold at 48px until xl.
+const heroH1 =
+  'font-display text-4xl font-semibold tracking-tight text-balance text-ink sm:text-5xl xl:text-6xl xl:leading-[1.05]'
 
 const industries = [
   'Clinics',
@@ -135,40 +139,42 @@ const steps = [
 export default function Landing() {
   return (
     <div>
-      {/* Hero */}
+      {/* Hero: text left, live demo right on wide screens; stacked and centred below that. */}
       <section className="pt-16 pb-20 sm:pt-24 sm:pb-24">
         <Container>
-          <div className="mx-auto max-w-3xl text-center">
-            <a href="#phone" className={`${eyebrow} transition-shadow hover:shadow-card-hover`}>
-              <span className="rounded-full bg-accent-soft px-1.5 py-px text-[11px] font-semibold text-accent">
-                New
-              </span>
-              <span className="min-[360px]:hidden">AI phone assistant</span>
-              <span className="hidden min-[360px]:inline">
-                An AI assistant that answers your phone
-              </span>
-              <span aria-hidden className="text-faint">
-                →
-              </span>
-            </a>
-            <h1 className={`mt-6 ${h1}`}>The front desk that never closes</h1>
-            <p className={`mx-auto mt-6 max-w-2xl ${lead}`}>
-              CoMaz OS gives your customers a live booking page, an AI assistant that picks up
-              every call, and reminders that bring them back — all feeding one schedule your team
-              controls.
-            </p>
-            <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <a href={APP_URL} className={`${btnPrimary} w-full sm:w-auto`}>
-                Open the app
+          <div className="grid grid-cols-1 items-center gap-14 xl:grid-cols-[minmax(0,1fr)_minmax(0,580px)] xl:gap-16">
+            <div className="mx-auto min-w-0 max-w-3xl text-center xl:mx-0 xl:max-w-none xl:text-left">
+              <a href="#phone" className={`${eyebrow} transition-shadow hover:shadow-card-hover`}>
+                <span className="rounded-full bg-accent-soft px-1.5 py-px text-[11px] font-semibold text-accent">
+                  New
+                </span>
+                <span className="min-[360px]:hidden">AI phone assistant</span>
+                <span className="hidden min-[360px]:inline">
+                  An AI assistant that answers your phone
+                </span>
+                <span aria-hidden className="text-faint">
+                  →
+                </span>
               </a>
-              <Link to="/pricing" className={`${btnGhost} w-full sm:w-auto`}>
-                See pricing
-              </Link>
+              <h1 className={`mt-6 ${heroH1}`}>The front desk that never closes</h1>
+              <p className={`mx-auto mt-6 max-w-2xl xl:mx-0 ${lead}`}>
+                CoMaz OS gives your customers a live booking page, an AI assistant that picks up
+                every call, and reminders that bring them back — all feeding one schedule your team
+                controls.
+              </p>
+              <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row xl:justify-start">
+                <a href={APP_URL} className={`${btnPrimary} w-full sm:w-auto`}>
+                  Open the app
+                </a>
+                <Link to="/pricing" className={`${btnGhost} w-full sm:w-auto`}>
+                  See pricing
+                </Link>
+              </div>
             </div>
-          </div>
 
-          <div className="mx-auto mt-14 max-w-3xl">
-            <BookingDemo />
+            <div className="mx-auto w-full max-w-3xl min-w-0 xl:max-w-none">
+              <BookingDemo />
+            </div>
           </div>
         </Container>
       </section>

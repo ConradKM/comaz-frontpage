@@ -299,14 +299,16 @@ export default function BookingDemo() {
   }
 
   const view: View = { state, today, service, targetDate, slots }
-  const ghostView: View = {
+  // One hidden copy of every step, each fully filled in, to size the frame by the tallest.
+  const filled = beats.reduce((s, b) => (b.apply ? b.apply(s) : s), EMPTY)
+  const ghostViews: View[] = STEPS.map(({ key }) => ({
     ...view,
-    state: { ...EMPTY, step: 'time', date: targetDate },
+    state: { ...filled, step: key, focus: null, pressed: null },
     ghost: true,
-  }
+  }))
 
   return (
-    <div ref={rootRef}>
+    <div ref={rootRef} className="@container">
       <p className="sr-only">
         An animated demo of a customer booking an appointment: they choose a service, pick a date
         and time, enter their details, review, and send a booking request.
@@ -314,21 +316,21 @@ export default function BookingDemo() {
 
       <div className="overflow-hidden rounded-2xl bg-white shadow-card">
         {/* Customer page header, as in the app */}
-        <div className="flex items-center justify-between border-b border-silver px-4 py-3 sm:px-6">
+        <div className="flex items-center justify-between border-b border-silver px-4 py-3 @xl:px-6">
           <span className="text-sm font-semibold text-ink">CoMaz OS</span>
           <span className="rounded-md bg-ink px-3 py-1.5 text-xs font-medium text-white">
             Sign In
           </span>
         </div>
 
-        {/* All three layers share one grid cell: the frame is as tall as the tallest step (the
-            hidden date & time copy), so the page never jumps while each real step hugs its own
+        {/* All the layers share one grid cell: the frame is as tall as the tallest step (sized
+            by the hidden copies), so the page never jumps while each real step hugs its own
             content, as it does in the app. */}
         <div
           ref={stageRef}
           inert
           aria-hidden
-          className="relative grid grid-cols-1 bg-[#fafafa] px-3 py-6 sm:px-8 sm:py-7"
+          className="relative grid grid-cols-1 bg-[#fafafa] px-3 py-6 @lg:px-6 @xl:py-7 @2xl:px-8"
         >
           <div
             className={`col-start-1 row-start-1 mx-auto w-full max-w-xl min-w-0 self-start ${
@@ -337,9 +339,14 @@ export default function BookingDemo() {
           >
             <Wizard view={view} />
           </div>
-          <div className="invisible col-start-1 row-start-1 mx-auto w-full max-w-xl min-w-0">
-            <Wizard view={ghostView} />
-          </div>
+          {ghostViews.map((g) => (
+            <div
+              key={g.state.step}
+              className="invisible col-start-1 row-start-1 mx-auto w-full max-w-xl min-w-0"
+            >
+              <Wizard view={g} />
+            </div>
+          ))}
           <div
             className={`col-start-1 row-start-1 mx-auto w-full max-w-lg min-w-0 self-start pt-4 ${
               state.step === 'done' ? 'animate-rise' : 'invisible'
@@ -443,7 +450,7 @@ function Wizard({ view }: { view: View }) {
                     {st === 'done' ? <CheckIcon className="h-3.5 w-3.5" /> : i + 1}
                   </span>
                   <span
-                    className={`hidden text-xs font-medium sm:block ${
+                    className={`hidden text-xs font-medium @lg:block ${
                       st === 'upcoming' ? 'text-faint' : 'text-graphite'
                     }`}
                   >
@@ -457,7 +464,7 @@ function Wizard({ view }: { view: View }) {
         </ol>
       </div>
 
-      <div className="mt-6 rounded-lg bg-white p-4 shadow-card sm:p-6">
+      <div className="mt-6 rounded-lg bg-white p-4 shadow-card @xl:p-6">
         {/* Keyed on the step so the fade replays on each transition. */}
         <div key={state.step} className={ghost ? undefined : 'animate-rise'}>
           {state.step === 'service' && <ServicePanel view={view} dk={dk} />}
@@ -570,8 +577,8 @@ function TimePanel({ view: { state, today, service, targetDate, slots }, dk }: P
         <span className="text-xs font-medium underline">Change</span>
       </p>
 
-      <div className="mt-4 md:grid md:grid-cols-[minmax(0,1fr)_190px] md:items-start md:gap-3">
-        <div className="rounded-lg border border-silver p-3 sm:p-4">
+      <div className="mt-4 @lg:grid @lg:grid-cols-[minmax(0,1fr)_170px] @lg:items-start @lg:gap-3 @2xl:grid-cols-[minmax(0,1fr)_190px]">
+        <div className="rounded-lg border border-silver p-3 @xl:p-4">
           <div className="flex items-center justify-between">
             <span className="flex h-7 w-8 items-center justify-center rounded-md border border-silver text-sm text-faint">
               ‹
@@ -600,7 +607,7 @@ function TimePanel({ view: { state, today, service, targetDate, slots }, dk }: P
                 <div
                   key={d.getDate()}
                   data-demo={dk(`day-${ymd(d)}`)}
-                  className={`flex h-9 flex-col items-center justify-center rounded-md border text-sm transition-colors duration-200 sm:h-10 ${
+                  className={`flex h-9 flex-col items-center justify-center rounded-md border text-sm transition-colors duration-200 @xl:h-10 ${
                     selected ? 'border-ink bg-ink text-white' : style.cell
                   }`}
                 >
@@ -608,14 +615,14 @@ function TimePanel({ view: { state, today, service, targetDate, slots }, dk }: P
                   {level !== 'closed' && (
                     <>
                       <span
-                        className={`mt-1 hidden text-[9px] leading-none sm:block ${
+                        className={`mt-1 hidden text-[9px] leading-none @2xl:block ${
                           selected ? 'text-white/70' : ''
                         }`}
                       >
                         {style.label}
                       </span>
                       <span
-                        className={`mt-1 h-1 w-1 rounded-full sm:hidden ${
+                        className={`mt-1 h-1 w-1 rounded-full @2xl:hidden ${
                           selected ? 'bg-white' : style.dot
                         }`}
                       />
@@ -637,12 +644,12 @@ function TimePanel({ view: { state, today, service, targetDate, slots }, dk }: P
 
         {/* Always laid out so the panel doesn't change height when a day is picked. */}
         <div
-          className={`mt-3 rounded-lg border border-silver p-3 sm:p-4 md:mt-0 ${
+          className={`mt-3 rounded-lg border border-silver p-3 @xl:p-4 @lg:mt-0 ${
             state.date ? 'animate-rise' : 'invisible'
           }`}
         >
           <h3 className="text-sm font-semibold text-ink">Times for {longDate(targetDate)}</h3>
-          <ul className="mt-3 grid grid-cols-3 gap-2 md:grid-cols-2">
+          <ul className="mt-3 grid grid-cols-3 gap-2 @lg:grid-cols-2">
             {slots.map((t) => {
               const selected = t === state.time
               return (
@@ -677,7 +684,7 @@ function DetailsPanel({ view: { state }, dk }: PanelProps) {
       {when && <SlotBanner when={when} />}
       <h2 className={panelTitle}>Your details</h2>
       <div className="mt-4 space-y-4">
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 gap-3 @xl:gap-4">
           <FieldBox
             label="First name"
             demo={dk('field-first')}
@@ -714,12 +721,10 @@ function DetailsPanel({ view: { state }, dk }: PanelProps) {
 }
 
 function ReviewPanel({ view: { state, service } }: Pick<PanelProps, 'view'>) {
-  const when = state.date && state.time ? `${longDate(state.date)} at ${state.time}` : ''
   const finish = state.time ? addMinutes(state.time, service.minutes) : ''
   const fullName = `${state.fields.first} ${state.fields.last}`.trim()
   return (
     <div>
-      {when && <SlotBanner when={when} />}
       <h2 className={panelTitle}>Review</h2>
       <p className="mt-1 text-sm text-muted">Please check everything below before you submit.</p>
       <div className="mt-4 space-y-3">
