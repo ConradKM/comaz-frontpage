@@ -6,15 +6,35 @@ export const DEMO_BUSINESS = 'Harbour Studio'
 export type DemoService = {
   id: string
   name: string
+  description: string
   minutes: number
   price: number
   deposit?: number
 }
 
 export const DEMO_SERVICES: DemoService[] = [
-  { id: 'consult', name: 'Initial consultation', minutes: 30, price: 45, deposit: 10 },
-  { id: 'session', name: 'Standard session', minutes: 60, price: 70 },
-  { id: 'followup', name: 'Follow-up', minutes: 20, price: 30 },
+  {
+    id: 'consult',
+    name: 'Initial consultation',
+    description: 'A first conversation to understand what you need.',
+    minutes: 30,
+    price: 45,
+    deposit: 10,
+  },
+  {
+    id: 'session',
+    name: 'Standard session',
+    description: 'A full one-to-one session.',
+    minutes: 60,
+    price: 70,
+  },
+  {
+    id: 'followup',
+    name: 'Follow-up',
+    description: 'A short check-in after a previous visit.',
+    minutes: 20,
+    price: 30,
+  },
 ]
 
 export const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -54,10 +74,10 @@ export function isOpen(d: Date, today: Date) {
   return d.getDay() !== 0 && startOfDay(d) > startOfDay(today)
 }
 
-/** Open times for a day, stepping by the service length from 09:00 (Sat: until 13:00). */
+/** Open times for a day, every half hour from 09:00 (Sat: until 13:00). */
 export function slotsFor(d: Date, service: DemoService) {
   const close = d.getDay() === 6 ? 13 * 60 : 17 * 60
-  const step = Math.max(service.minutes, 30)
+  const step = 30
   const slots: string[] = []
   for (let t = 9 * 60, i = 0; t + service.minutes <= close; t += step, i++) {
     if (t >= 12 * 60 + 30 && t < 13 * 60 + 30 && d.getDay() !== 6) continue // lunch
@@ -65,6 +85,23 @@ export function slotsFor(d: Date, service: DemoService) {
     slots.push(`${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`)
   }
   return slots
+}
+
+export type DayLevel = 'open' | 'limited' | 'full' | 'closed'
+
+/** How busy a day looks on the calendar, derived from how many times are left. */
+export function dayLevel(d: Date, today: Date, service: DemoService): DayLevel {
+  if (!isOpen(d, today)) return 'closed'
+  const free = slotsFor(d, service).length
+  if (free === 0) return 'full'
+  return free <= 4 ? 'limited' : 'open'
+}
+
+export function formatMinutes(minutes: number) {
+  if (minutes < 60) return `${minutes} min`
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  return m ? `${h} h ${m} min` : `${h} h`
 }
 
 export function longDate(d: Date) {

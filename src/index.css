@@ -45,7 +45,7 @@ html {
 }
 
 body {
-  @apply bg-paper text-graphite antialiased;
+  @apply overflow-x-clip bg-paper text-graphite antialiased;
   letter-spacing: -0.011em;
 }
 

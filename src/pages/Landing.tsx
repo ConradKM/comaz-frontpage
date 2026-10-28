@@ -13,7 +13,7 @@ import {
   UserPortalIcon,
   UsersIcon,
 } from '../components/icons'
-import BookingWidget from '../components/landing/BookingWidget'
+import BookingDemo from '../components/landing/BookingDemo'
 import CallDemo from '../components/landing/CallDemo'
 import { APP_URL } from '../lib/constants'
 import {
@@ -98,7 +98,7 @@ const features = [
     icon: UserPortalIcon,
     title: 'A customer portal',
     description:
-      'Customers sign in with their email and an account reference to see history and upcoming appointments. No password to forget.',
+      'Customers sign in with their email and the booking reference from their confirmation to see their history and upcoming appointments. No password to forget.',
   },
   {
     icon: ChecklistIcon,
@@ -143,7 +143,10 @@ export default function Landing() {
               <span className="rounded-full bg-accent-soft px-1.5 py-px text-[11px] font-semibold text-accent">
                 New
               </span>
-              An AI assistant that answers your phone
+              <span className="min-[360px]:hidden">AI phone assistant</span>
+              <span className="hidden min-[360px]:inline">
+                An AI assistant that answers your phone
+              </span>
               <span aria-hidden className="text-faint">
                 →
               </span>
@@ -164,13 +167,8 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="mx-auto mt-14 max-w-4xl">
-            <div className={`${card} overflow-hidden`}>
-              <BookingWidget />
-            </div>
-            <p className="mt-4 text-center text-xs text-faint">
-              Try it — this is what your customers see. (Demo business, no real booking made.)
-            </p>
+          <div className="mx-auto mt-14 max-w-3xl">
+            <BookingDemo />
           </div>
         </Container>
       </section>
@@ -197,8 +195,8 @@ export default function Landing() {
       {/* AI phone assistant */}
       <section id="phone" className="scroll-mt-20 border-y border-silver bg-white py-20 sm:py-24">
         <Container>
-          <div className="grid gap-12 lg:grid-cols-[1fr_minmax(0,500px)] lg:items-start lg:gap-16">
-            <div className="lg:sticky lg:top-28">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_minmax(0,500px)] lg:items-start lg:gap-16">
+            <div className="min-w-0 lg:sticky lg:top-28">
               <span className="inline-flex items-center gap-2 rounded-full bg-paper px-3 py-1 text-xs font-medium text-graphite">
                 <PhoneIcon className="h-3.5 w-3.5" /> AI phone assistant
               </span>
@@ -231,7 +229,9 @@ export default function Landing() {
               </p>
             </div>
 
-            <CallDemo />
+            <div className="min-w-0">
+              <CallDemo />
+            </div>
           </div>
         </Container>
       </section>
@@ -242,8 +242,8 @@ export default function Landing() {
           <div className="mx-auto max-w-2xl text-center">
             <h2 className={h2}>Everything you need, nothing you don’t</h2>
             <p className={`mt-4 ${lead}`}>
-              CoMaz OS replaces the diary, the spreadsheet and the sticky notes with one place
-              your whole team can trust.
+              CoMaz OS replaces the diary, the spreadsheet and the sticky notes with one place your
+              whole team can trust.
             </p>
           </div>
 
@@ -299,8 +299,8 @@ export default function Landing() {
               Ready to see it in action?
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-white/65">
-              Open the app to explore CoMaz OS, or take a look at pricing to find the right plan
-              for your business.
+              Open the app to explore CoMaz OS, or take a look at pricing to find the right plan for
+              your business.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <a href={APP_URL} className={`${btnOnDark} w-full sm:w-auto`}>
