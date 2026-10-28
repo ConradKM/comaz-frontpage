@@ -17,7 +17,7 @@ export default function Footer() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-16 gap-y-8">
+          <div className="grid grid-cols-1 gap-x-6 gap-y-8 min-[360px]:grid-cols-2 sm:gap-x-16">
             <div>
               <h3 className="text-xs font-medium tracking-wide text-faint uppercase">Product</h3>
               <ul className="mt-4 space-y-2.5 text-sm text-muted">
