@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
   type ReactNode,
+  type Ref,
 } from 'react'
 import {
   DEMO_BUSINESS,
@@ -210,6 +211,9 @@ type View = {
   ghost?: boolean
 }
 
+/** How long the confirmation stays up before the demo starts over. */
+const HOLD_MS = 5000
+
 export default function BookingDemo() {
   const today = useMemo(() => new Date(), [])
   const script = useMemo(() => buildScript(today), [today])
@@ -217,7 +221,9 @@ export default function BookingDemo() {
 
   const [reduced] = useState(prefersReducedMotion)
   const [beat, setBeat] = useState(reduced ? beats.length : 0)
-  const [playing, setPlaying] = useState(false)
+  // Set once the demo has reached the middle of the screen; `inView` tracks it after that.
+  const [started, setStarted] = useState(false)
+  const [inView, setInView] = useState(false)
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null)
 
   const rootRef = useRef<HTMLDivElement>(null)
@@ -233,17 +239,17 @@ export default function BookingDemo() {
     () => beats.slice(0, beat + 1).reduce<string | null>((key, b) => b.move ?? key, null),
     [beats, beat],
   )
-  const finished = !playing && beat >= beats.length
+  const playing = started && !reduced && beat < beats.length
   const current = beats[beat]
 
   // Start once the demo reaches the middle of the screen, so a visitor who scrolls down to it
   // sees it from the first step rather than arriving partway through.
   useEffect(() => {
-    if (reduced || beat > 0 || playing || !rootRef.current) return
+    if (reduced || started || !rootRef.current) return
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setPlaying(true)
+          setStarted(true)
           observer.disconnect()
         }
       },
@@ -251,17 +257,34 @@ export default function BookingDemo() {
     )
     observer.observe(rootRef.current)
     return () => observer.disconnect()
-  }, [reduced, beat, playing])
+  }, [reduced, started])
 
-  // Hold each beat for its `wait`, then move to the next.
+  // Pause while it's scrolled out of view, so a demo nobody can see isn't ticking away.
   useEffect(() => {
-    if (!playing || beat >= beats.length) return
-    const t = setTimeout(() => {
-      setBeat(beat + 1)
-      if (beat + 1 >= beats.length) setPlaying(false)
-    }, beats[beat].wait)
+    if (reduced || !rootRef.current) return
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting))
+    observer.observe(rootRef.current)
+    return () => observer.disconnect()
+  }, [reduced])
+
+  // Hold each beat for its `wait`, then move to the next. After the last one, linger on the
+  // confirmation and start over, so the demo loops for as long as it's on screen.
+  useEffect(() => {
+    if (reduced || !started || !inView) return
+    const atEnd = beat >= beats.length
+    const t = setTimeout(
+      () => {
+        if (atEnd) {
+          setPos(null)
+          setBeat(0)
+        } else {
+          setBeat(beat + 1)
+        }
+      },
+      atEnd ? HOLD_MS : beats[beat].wait,
+    )
     return () => clearTimeout(t)
-  }, [playing, beat, beats])
+  }, [reduced, started, inView, beat, beats])
 
   // Glide the pointer to whatever it's aimed at, re-measuring after each render and resize.
   const place = useCallback(() => {
@@ -292,12 +315,6 @@ export default function BookingDemo() {
     if (playing && !pos && stage) setPos({ x: stage.clientWidth * 0.82, y: 150 })
   }, [playing, pos])
 
-  const replay = () => {
-    setPos(null)
-    setBeat(0)
-    setPlaying(true)
-  }
-
   const view: View = { state, today, service, targetDate, slots }
   // One hidden copy of every step, each fully filled in, to size the frame by the tallest.
   const filled = beats.reduce((s, b) => (b.apply ? b.apply(s) : s), EMPTY)
@@ -308,99 +325,142 @@ export default function BookingDemo() {
   }))
 
   return (
-    <div ref={rootRef} className="@container">
+    <div ref={rootRef} className="grid grid-cols-1 @container">
       <p className="sr-only">
         An animated demo of a customer booking an appointment: they choose a service, pick a date
         and time, enter their details, review, and send a booking request.
       </p>
 
-      <div className="overflow-hidden rounded-2xl bg-white shadow-card">
-        {/* Customer page header, as in the app */}
-        <div className="flex items-center justify-between border-b border-silver px-4 py-3 @xl:px-6">
-          <span className="text-sm font-semibold text-ink">CoMaz OS</span>
-          <span className="rounded-md bg-ink px-3 py-1.5 text-xs font-medium text-white">
-            Sign In
-          </span>
-        </div>
+      {/* The window you see is only as tall as the step it's showing. In the two-column hero
+          (xl and up) it sits in room reserved for the tallest step, by the hidden copy below, so
+          the text beside it never moves; everywhere else the page just flows around it. */}
+      <div className="col-start-1 row-start-1 min-w-0 self-start xl:self-center">
+        <div inert aria-hidden>
+          <Frame stageRef={stageRef} hug>
+            {state.step === 'done' ? (
+              <div className="mx-auto w-full max-w-lg min-w-0 animate-rise pt-4">
+                <Confirmation state={state} />
+              </div>
+            ) : (
+              <div className="mx-auto w-full max-w-xl min-w-0">
+                <Wizard view={view} />
+              </div>
+            )}
 
-        {/* All the layers share one grid cell: the frame is as tall as the tallest step (sized
-            by the hidden copies), so the page never jumps while each real step hugs its own
-            content, as it does in the app. */}
-        <div
-          ref={stageRef}
-          inert
-          aria-hidden
-          className="relative grid grid-cols-1 bg-[#fafafa] px-3 py-6 @lg:px-6 @xl:py-7 @2xl:px-8"
-        >
-          <div
-            className={`col-start-1 row-start-1 mx-auto w-full max-w-xl min-w-0 self-start ${
-              state.step === 'done' ? 'invisible' : ''
-            }`}
-          >
-            <Wizard view={view} />
-          </div>
+            {/* Pointer */}
+            {pos && (
+              <div
+                className={`pointer-events-none absolute top-0 left-0 z-20 transition-[transform,opacity] duration-[650ms] ease-out ${
+                  playing ? 'opacity-100' : 'opacity-0'
+                }`}
+                style={{ transform: `translate3d(${pos.x}px, ${pos.y}px, 0)` }}
+              >
+                <span className="relative -mt-[3px] -ml-[4px] block">
+                  {current?.click && (
+                    <span
+                      key={beat}
+                      className="absolute -top-2.5 -left-2.5 h-7 w-7 animate-ping rounded-full bg-ink/25"
+                    />
+                  )}
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    className="relative drop-shadow-md"
+                  >
+                    <path
+                      d="M5 3l14 7.5-6 1.8-2.4 6.2L5 3z"
+                      fill="#101010"
+                      stroke="#fff"
+                      strokeWidth="1.5"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+              </div>
+            )}
+          </Frame>
+        </div>
+        <Caption />
+      </div>
+
+      <div
+        inert
+        aria-hidden
+        className="pointer-events-none invisible col-start-1 row-start-1 min-w-0 select-none max-xl:hidden"
+      >
+        <Frame>
           {ghostViews.map((g) => (
             <div
               key={g.state.step}
-              className="invisible col-start-1 row-start-1 mx-auto w-full max-w-xl min-w-0"
+              className="col-start-1 row-start-1 mx-auto w-full max-w-xl min-w-0"
             >
               <Wizard view={g} />
             </div>
           ))}
-          <div
-            className={`col-start-1 row-start-1 mx-auto w-full max-w-lg min-w-0 self-start pt-4 ${
-              state.step === 'done' ? 'animate-rise' : 'invisible'
-            }`}
-          >
-            <Confirmation state={state} />
+          <div className="col-start-1 row-start-1 mx-auto w-full max-w-lg min-w-0 pt-4">
+            <Confirmation state={filled} />
           </div>
-
-          {/* Pointer */}
-          {pos && (
-            <div
-              className={`pointer-events-none absolute top-0 left-0 z-20 transition-[transform,opacity] duration-[650ms] ease-out ${
-                playing ? 'opacity-100' : 'opacity-0'
-              }`}
-              style={{ transform: `translate3d(${pos.x}px, ${pos.y}px, 0)` }}
-            >
-              <span className="relative -mt-[3px] -ml-[4px] block">
-                {current?.click && (
-                  <span
-                    key={beat}
-                    className="absolute -top-2.5 -left-2.5 h-7 w-7 animate-ping rounded-full bg-ink/25"
-                  />
-                )}
-                <svg width="22" height="22" viewBox="0 0 24 24" className="relative drop-shadow-md">
-                  <path
-                    d="M5 3l14 7.5-6 1.8-2.4 6.2L5 3z"
-                    fill="#101010"
-                    stroke="#fff"
-                    strokeWidth="1.5"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="mt-4 flex items-center justify-between gap-3 px-1">
-        <p className="text-xs text-faint">
-          What your customers see — a made-up business, no real booking made.
-        </p>
-        {!reduced && (
-          <button
-            type="button"
-            onClick={replay}
-            disabled={!finished}
-            className="shrink-0 cursor-pointer rounded-full border border-silver bg-white px-3 py-1 text-xs font-medium text-ink transition-colors hover:border-ink disabled:cursor-default disabled:opacity-40 disabled:hover:border-silver"
-          >
-            Watch again
-          </button>
-        )}
+        </Frame>
+        <Caption />
       </div>
     </div>
+  )
+}
+
+/**
+ * The browser-style window around the booking page: the customer header bar, then the page.
+ * With `hug`, the page area animates to the height of whatever it's currently showing.
+ */
+function Frame({
+  stageRef,
+  hug,
+  children,
+}: {
+  stageRef?: Ref<HTMLDivElement>
+  hug?: boolean
+  children: ReactNode
+}) {
+  const innerRef = useRef<HTMLDivElement>(null)
+  const [height, setHeight] = useState<number>()
+
+  useEffect(() => {
+    const el = innerRef.current
+    if (!hug || !el) return
+    const observer = new ResizeObserver(() => setHeight(el.offsetHeight))
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [hug])
+
+  return (
+    <div className="overflow-hidden rounded-2xl bg-white shadow-card">
+      {/* Customer page header, as in the app */}
+      <div className="flex items-center justify-between border-b border-silver px-4 py-3 @xl:px-6">
+        <span className="text-sm font-semibold text-ink">CoMaz OS</span>
+        <span className="rounded-md bg-ink px-3 py-1.5 text-xs font-medium text-white">
+          Sign In
+        </span>
+      </div>
+      <div
+        ref={stageRef}
+        className={`relative bg-[#fafafa] ${
+          hug ? 'overflow-hidden transition-[height] duration-300 ease-out' : ''
+        }`}
+        style={hug && height !== undefined ? { height } : undefined}
+      >
+        <div ref={innerRef} className="grid grid-cols-1 px-3 py-6 @lg:px-6 @xl:py-7 @2xl:px-8">
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function Caption() {
+  return (
+    <p className="mt-4 px-1 text-xs text-faint">
+      What your customers see — a made-up business, no real booking made.
+    </p>
   )
 }
 
@@ -642,10 +702,11 @@ function TimePanel({ view: { state, today, service, targetDate, slots }, dk }: P
           </ul>
         </div>
 
-        {/* Always laid out so the panel doesn't change height when a day is picked. */}
+        {/* Beside the calendar its column is always held open, so the calendar doesn't resize when
+            a day is picked; stacked below it, it only takes room once there's something to show. */}
         <div
           className={`mt-3 rounded-lg border border-silver p-3 @xl:p-4 @lg:mt-0 ${
-            state.date ? 'animate-rise' : 'invisible'
+            state.date ? 'animate-rise' : 'hidden @lg:block @lg:invisible'
           }`}
         >
           <h3 className="text-sm font-semibold text-ink">Times for {longDate(targetDate)}</h3>
