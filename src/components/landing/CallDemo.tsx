@@ -70,6 +70,9 @@ function delayFor(line: Line) {
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+/** How long the finished booking stays up before the call rings again. */
+const ENDED_HOLD_MS = 6000
+
 function formatElapsed(s: number) {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 }
@@ -82,46 +85,62 @@ export default function CallDemo() {
   const [phase, setPhase] = useState<'ringing' | 'live' | 'ended'>(reduced ? 'ended' : 'ringing')
   const [shown, setShown] = useState(reduced ? lines.length : 0)
   const [elapsed, setElapsed] = useState(reduced ? 94 : 0)
+  // `seen`: has been well into view at least once. `inView`: on screen right now. Together they
+  // start the call when you scroll to it and pause it whenever it's off-screen.
+  const [seen, setSeen] = useState(false)
+  const [inView, setInView] = useState(false)
 
   const rootRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
 
-  // Pick up the call once the demo scrolls into view.
   useEffect(() => {
-    if (phase !== 'ringing' || !rootRef.current) return
-    let pickUp: ReturnType<typeof setTimeout> | undefined
+    if (!rootRef.current) return
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          pickUp = setTimeout(() => setPhase('live'), 900)
-          observer.disconnect()
-        }
+        setInView(entry.isIntersecting)
+        if (entry.intersectionRatio >= 0.4) setSeen(true)
       },
-      { threshold: 0.4 },
+      { threshold: [0, 0.4] },
     )
     observer.observe(rootRef.current)
-    return () => {
-      observer.disconnect()
-      clearTimeout(pickUp)
-    }
-  }, [phase])
+    return () => observer.disconnect()
+  }, [])
+
+  // Pick up the call once the demo has scrolled into view.
+  useEffect(() => {
+    if (phase !== 'ringing' || !seen || !inView) return
+    const t = setTimeout(() => setPhase('live'), 900)
+    return () => clearTimeout(t)
+  }, [phase, seen, inView])
 
   // Reveal the next line after a pause that roughly matches its length.
   useEffect(() => {
-    if (phase !== 'live') return
+    if (phase !== 'live' || !inView) return
     if (shown >= lines.length) {
       const t = setTimeout(() => setPhase('ended'), 500)
       return () => clearTimeout(t)
     }
     const t = setTimeout(() => setShown((s) => s + 1), delayFor(lines[shown]))
     return () => clearTimeout(t)
-  }, [phase, shown, lines])
+  }, [phase, inView, shown, lines])
 
   useEffect(() => {
-    if (phase !== 'live') return
+    if (phase !== 'live' || !inView) return
     const t = setInterval(() => setElapsed((e) => e + 1), 1000)
     return () => clearInterval(t)
-  }, [phase])
+  }, [phase, inView])
+
+  // Once the call has ended, leave the finished booking up for a few seconds and ring again,
+  // so the demo loops for as long as it's on screen.
+  useEffect(() => {
+    if (reduced || phase !== 'ended' || !inView) return
+    const t = setTimeout(() => {
+      setShown(0)
+      setElapsed(0)
+      setPhase('ringing')
+    }, ENDED_HOLD_MS)
+    return () => clearTimeout(t)
+  }, [reduced, phase, inView])
 
   useEffect(() => {
     const el = listRef.current
@@ -226,14 +245,16 @@ export default function CallDemo() {
 
         <div className="flex items-center justify-between gap-3 border-t border-silver px-5 py-3">
           <p className="text-xs text-faint">Illustrative call · real booking flow</p>
-          <button
-            type="button"
-            onClick={replay}
-            disabled={phase !== 'ended'}
-            className="cursor-pointer rounded-full border border-silver px-3 py-1 text-xs font-medium text-ink transition-colors hover:border-ink disabled:cursor-default disabled:opacity-40 disabled:hover:border-silver"
-          >
-            Replay call
-          </button>
+          {reduced && (
+            <button
+              type="button"
+              onClick={replay}
+              disabled={phase !== 'ended'}
+              className="cursor-pointer rounded-full border border-silver px-3 py-1 text-xs font-medium text-ink transition-colors hover:border-ink disabled:cursor-default disabled:opacity-40 disabled:hover:border-silver"
+            >
+              Replay call
+            </button>
+          )}
         </div>
       </div>
 
